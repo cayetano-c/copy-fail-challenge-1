@@ -1,0 +1,6 @@
+#!/bin/busybox sh
+/bin/busybox --install -s /bin
+mount -t proc proc /proc
+mount -t sysfs sysfs /sys
+echo -e "\nBienvenido al lab de Cayetano Cordova\n"
+setsid cttyhack sh
