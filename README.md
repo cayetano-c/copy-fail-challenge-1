@@ -83,3 +83,5 @@ copy-fail-challenge/
 *Basado en CVE-2026-31431 descubierto por Theori / Xint Code. Divulgado el 29 de abril de 2026.*
 
 commit 3
+
+Commit 4: hito-1: kernel vulnerable confirmado - kernel compilado desde fuente motivado por bzImage pre-compilado no habilita soporte BINFMT_ELF; rootfs reconstruido con busybox estático x86-64; VM levanta correctamente con kernel 6.12.0 CVE-2026-31431 como alumno student
