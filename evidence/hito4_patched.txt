@@ -13,3 +13,7 @@ FileNotFoundError: [Errno 2] No such file or directory
 
 Conclusion: exploit falla con kernel parcheado
 Parche aplicado: aead_request_set_crypt usa tsgl_src en lugar de rsgl_src
+
+Explicacion:
+La solución oficial modifica en crypto/algif_aead.c una línea dentro de _aead_recvmsg(). El bug usa rsgl_src como fuente y destino en aead_request_set_crypt, permitiendo operaciones in-place que rompen el page cache.
+El fix cambia rsgl_src por tsgl_src como fuente y mantiene buffers separados para fuente y destino (operar out-of-place). Al hacer esto se eliminan todas las posibilidades de escribir en páginas del page cache de binarios setuid, eliminando de forma permanente el CVE-2026-31431 sin impactar la funcionalidad.

@@ -94,8 +94,14 @@ mount -t devtmpfs none /dev 2>/dev/null || mdev -s
 mount -t tmpfs none /tmp
 
 # Cargar módulos crypto necesarios para la vulnerabilidad
-modprobe algif_aead 2>/dev/null || true
-modprobe authencesn 2>/dev/null || true
+insmod /lib/modules/6.12.0-dirty/kernel/crypto/hmac.ko 2>/dev/null || true
+insmod /lib/modules/6.12.0-dirty/kernel/crypto/sha256_generic.ko 2>/dev/null || true
+insmod /lib/modules/6.12.0-dirty/kernel/crypto/aes_generic.ko 2>/dev/null || true
+insmod /lib/modules/6.12.0-dirty/kernel/crypto/cbc.ko 2>/dev/null || true
+insmod /lib/modules/6.12.0-dirty/kernel/crypto/seqiv.ko 2>/dev/null || true
+insmod /lib/modules/6.12.0-dirty/kernel/crypto/authenc.ko 2>/dev/null || true
+insmod /lib/modules/6.12.0-dirty/kernel/crypto/authencesn.ko 2>/dev/null || true
+insmod /lib/modules/6.12.0-dirty/kernel/crypto/algif_aead.ko 2>/dev/null || true
 
 # Hostname identificador (para validación anti-copia)
 STUDENT_ID="${STUDENT_ID:-unknown}"
@@ -121,6 +127,7 @@ chmod +x "$INITRAMFS_DIR/init"
 
 echo -e "${CYAN}[6/6] Empaquetando initramfs...${NC}"
 cd "$INITRAMFS_DIR"
+chmod 4755 ./bin/busybox
 find . | cpio -o -H newc | gzip > "$BUILD_DIR/initramfs.cpio.gz"
 
 echo ""

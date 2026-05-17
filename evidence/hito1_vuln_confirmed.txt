@@ -6,3 +6,9 @@ Identidad: uid=1001(student) gid=1001(student) groups=1001(student)
 Módulos AF_ALG:
 (kernel monolítico - algif_aead compilado built-in, no como módulo)
 AF_ALG disponible via /proc/crypto (crypto API activa)
+
+Explicacion: 
+Nuestro objetivo era arrancar una VM con el kernel 6.12.0, el cual era vulnerable al CVE-2026-31431. 
+El kernel precompilado por el profe no funcionaba porque lo compiló sin CONFIG_BINFMT_ELF y por tanto no era capaz de ejecutar ningún binario ELF, incluyendo el /init. 
+La solución fue compilar el kernel desde el código fuente habilitando todas las opciones necesarias como BINFMT_ELF, BINFMT_SCRIPT, AF_ALG, CRYPTO_AUTHENCESN, CRYPTO_AEAD, CRYPTO_HMAC, etc. 
+También se construyó el rootfs con BusyBox estático y Python 3, estableciendo el usuario student sin privilegios como requería el reto.
