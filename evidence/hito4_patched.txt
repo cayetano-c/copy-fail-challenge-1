@@ -1,0 +1,15 @@
+=== HITO 4: PARCHE APLICADO ===
+Fecha: Sun May 17 19:17:45 UTC 2026
+Kernel: 6.12.0
+Identidad: uid=0(root) gid=0(root)
+
+Intento exploit post-parche:
+Traceback (most recent call last):
+  File "/home/student/copy_fail_exp.py", line 9, in <module>
+    while i<len(e):c(f,i,e[i:i+4]);i+=4
+  File "/home/student/copy_fail_exp.py", line 5, in c
+    a=s.socket(38,5,0);a.bind(("aead","authencesn(hmac(sha256),cbc(aes))"))
+FileNotFoundError: [Errno 2] No such file or directory
+
+Conclusion: exploit falla con kernel parcheado
+Parche aplicado: aead_request_set_crypt usa tsgl_src en lugar de rsgl_src
