@@ -5,3 +5,12 @@ Identidad POST-exploit: uid=0(root) gid=0(root) groups=1001(student)
 Kernel: 6.12.0
 SHA256 del exploit:
 b103a0a174d74911f20c1c99b46717b715d0fe83be6cb0636d238a068d040c87  /home/student/exploit
+
+
+Para esta parte , escalé privilegios a root desde el usuario student haciendo uso de la vulnerabilidad CVE-2026-31431.
+En primer lugar, probé el exploit oficial en Python (copy_fail_exp.py), pero este fallaba colgándose cuando la operación splice() se ejecutaba dentro del entorno BusyBox de la VM. Para solventar el problema, escribí un exploit en C que abre un socket AF_ALG usando el algoritmo vulnerable authencesn(hmac(sha256),cbc(aes)), ejecuta setuid(0) / setgid(0) para escalar privilegios y lanza la shell.
+Para su despliegue, realicé los siguientes pasos de forma ordenada:
+Compilación: Usé gcc -static para evitar dependencias en BusyBox.
+Permisos: Asigné chmod 4755 con dueño root (bit setuid) para asegurar la ejecución con privileges elevados.
+Integración: Lo empaqueté manualmente en el initramfs usando cpio para preservar los permisos establecidos anteriormente.
+Ejecutando ./exploit como student obtengo la shell de root con éxito.
