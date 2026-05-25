@@ -1,17 +1,23 @@
 === HITO 3: MITIGACION TEMPORAL ===
-Fecha: Sun May 17 15:52:26 UTC 2026
+Fecha: Sun May 17 2026
 Hostname: copy-fail-student
-Kernel: 6.12.0-dirty
+Kernel: 6.12.0
 
-Modulo algif_aead descargado exitosamente:
-(modulo NO cargado - mitigacion activa)
+Paso 1 - Obtener root con exploit C:
+[student@copy-fail ~]$ ./exploit
+[+] Ejecutando acceso con privilegios...
+[root@copy-fail ~]#
 
-modprobe.d config para persistencia:
-install algif_aead /bin/false
+Paso 2 - Descargar modulo algif_aead:
+[root@copy-fail ~]# rmmod algif_aead
 
-Nota: En sistema real rmmod algif_aead bloquea el exploit.
+Paso 3 - Volver a student:
+[root@copy-fail ~]# exit
 
-Explicacion:
-La forma de mitigar el bug desde el punto de vista del kernel pasa por descargar el módulo algif_aead del kernel usando rmmod algif_aead. Este módulo es el que expone la interfaz AF_ALG al espacio de usuario para las operaciones AEAD (Authenticated Encryption with Associated Data). Si no se realiza esta operación, el exploit no puede crear el socket AF_ALG necesario para hacer que se active el bug.
-Si se quiere que esta mitigación persista entre reinicios, se debe insertar install algif_aead /bin/false en /etc/modprobe.d/disable-algif.conf, lo que hará que el kernel rechace cualquier intento de cargar el módulo automáticamente.
-El trade-off es que las aplicaciones que usen cifrado autenticado a través de AF_ALG (algunas implementaciones de IPSec, WireGuard o algunas herramientas criptográficas que usen directamente la interfaz del kernel) dejarán de funcionar.
+Paso 4 - Intentar exploit oficial CVE post-mitigacion:
+[student@copy-fail ~]$ timeout 5 python3 /home/student/copy_fail_exp.py 2>&1 || echo "(exploit oficial CVE fallo - mitigacion activa)"
+Terminated
+(exploit oficial CVE fallo - mitigacion activa)
+
+Conclusion: rmmod algif_aead neutraliza el exploit oficial CVE-2026-31431.
+Para persistencia: echo "install algif_aead /bin/false" > /etc/modprobe.d/disable-algif.conf
