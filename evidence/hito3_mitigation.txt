@@ -21,3 +21,7 @@ Terminated
 
 Conclusion: rmmod algif_aead neutraliza el exploit oficial CVE-2026-31431.
 Para persistencia: echo "install algif_aead /bin/false" > /etc/modprobe.d/disable-algif.conf
+
+La mitigación impide cargar el módulo algif_aead del kernel, en concreto rmmod algif_aead. Este módulo expone AF_ALG para realizar operaciones AEAD en el espacio de usuario; sin este módulo, el exploit no puede crear el socket authencesn(hmac(sha256),cbc(aes)), necesario para trigger el bug.
+El proceso seguido fue: primero se consiguió root con el exploit C, luego se descargó el módulo con rmmod algif_aead y al ejecutar el exploit oficial Python sin el módulo, fallaba con Terminated," confirmando que la mitigación funciona.
+Para que esta mitigación persista entre reinicios se añade install algif_aead /bin/false en /etc/modprobe.d/disable-algif.conf. Por contra, el trade-off que se consigue es que aplicaciones que usen cifrado autenticado via AF_ALG (ciertas implementaciones de IPSec) dejarían de funcionar.

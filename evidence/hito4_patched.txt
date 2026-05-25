@@ -11,3 +11,7 @@ timeout 10 python3 copy_fail_exp.py → Terminated
 (exploit CVE fallo - kernel parcheado)
 
 Conclusion: El parche neutraliza el CVE-2026-31431 completamente.
+
+
+La solución oficial introduce únicamente un cambio en la línea línea 931 de crypto/algif_aead.c dentro de _aead_recvmsg(). El bug que fue utilizado empleaba la variable rsgl_src como fuente y como destino a la vez en aead_request_set_crypt, permitiendo operaciones en "in-place" que provocaban la posible corrupción del page cache de aquellos binarios setuid.
+La solución sustituye rsgl_src por tsgl_src como fuente, manteniendo por tanto los buffers de los datos en origen y en destino separados. El kernel se recompiló con esta solución, generando bzImage_patched. Durante el arranque con este kernel parcheado, al ejecutar el exploit oficial de Python, este termina en Terminated sin haber conseguido escalar privilegios — confirmando que el CVE-2026-31431 queda totalmente neutralizado de forma permanente.
